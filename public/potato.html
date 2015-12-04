@@ -1,0 +1,10 @@
+<script src="modules/angular/angular.min.js"></script>
+<script src="potato.js"></script>
+<h2>Summoner Data:</h2>
+<html ng-app='potatoApp'>
+<div ng-controller="potatoController">
+  <div ng-bind='summoner.name'></div>
+  <div ng-repeat='match in summonerMatchList.matches' ng-bind='match.champion'>
+</div>
+
+</html>
