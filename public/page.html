@@ -1,0 +1,17 @@
+<script src="modules/angular/angular.min.js"></script>
+<script src="pageController.js"></script>
+
+<html ng-app='potatoApp'>
+<div ng-controller="potatoController">
+  <form ng-submit="doTheThing()">
+    <label>Enter your Summoner Name:
+      <input type='text' ng-bind="summonerNameInput">
+    </label>
+
+    <input type="submit" id="submit" value="Submit" />
+  </form>
+  <h2>Summoner data for <span ng-bind='summoner.name'></span>:</h2>
+  <div ng-repeat='match in summonerMatchList.matches' ng-bind='match.champion'></div>
+</div>
+
+</html>
