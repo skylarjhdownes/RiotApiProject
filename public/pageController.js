@@ -4,12 +4,12 @@ var app;
 app = angular.module('potatoApp', []);
 
 app.controller('potatoController', function($scope, $http) {
-  var doTheThing;
   $scope.summoner = {};
   $scope.summonerStats = {};
   $scope.summonerMatchList = {};
   $scope.summonerNameInput = 'j1mm';
-  doTheThing = function() {
+  $scope.doTheThing = function() {
+    console.log("WakaWaka!");
     $http.get("/summonerInfoByName/" + $scope.summonerNameInput).then(function(response) {
       $scope.summoner = response.data[$scope.summonerNameInput];
       $http.get("/summonerStatsById/" + $scope.summoner.id).then(function(response) {

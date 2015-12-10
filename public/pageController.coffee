@@ -5,7 +5,8 @@ app.controller('potatoController', ($scope, $http) ->
   $scope.summonerStats = {}
   $scope.summonerMatchList = {}
   $scope.summonerNameInput = 'j1mm'
-  doTheThing = () ->
+  $scope.doTheThing = () ->
+    console.log("WakaWaka!")
     $http.get("/summonerInfoByName/#{$scope.summonerNameInput}").then (response) ->
         $scope.summoner = response.data[$scope.summonerNameInput]
         $http.get("/summonerStatsById/#{$scope.summoner.id}").then (response) ->
