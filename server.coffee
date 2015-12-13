@@ -25,8 +25,19 @@ app.get('/summonerStatsById/:id', (httpRequest, httpResponse) ->
 
 app.get('/summonerMatchListById/:id', (httpRequest, httpResponse) ->
   request.get("https://na.api.pvp.net/api/lol/na/v2.2/matchlist/by-summoner/#{httpRequest.params.id}?api_key=#{riotAPIKey}", (matchesError, matchesHttpResponse, matchesHttpBody) ->
-    console.log(matchesHttpBody)
     httpResponse.send(matchesHttpBody)
+  )
+)
+
+app.get('/championDataById/:id', (httpRequest, httpResponse) ->
+  request.get("https://global.api.pvp.net/api/lol/static-data/na/v1.2/champion/#{httpRequest.params.id}?champData=image&api_key=#{riotAPIKey}", (champError, champHttpResponse, champHttpBody) ->
+    httpResponse.send(champHttpBody)
+  )
+)
+
+app.get('/championData', (httpRequest, httpResponse) ->
+  request.get("https://global.api.pvp.net/api/lol/static-data/na/v1.2/champion?champData=image&api_key=#{riotAPIKey}", (champError, champHttpResponse, champHttpBody) ->
+    httpResponse.send(champHttpBody)
   )
 )
 

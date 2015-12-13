@@ -8,8 +8,11 @@ app.controller('potatoController', function($scope, $http) {
   $scope.summonerStats = {};
   $scope.summonerMatchList = {};
   $scope.summonerNameInput = 'j1mm';
+  $scope.annie = "http://ddragon.leagueoflegends.com/cdn/5.2.1/img/champion/Annie.png";
+  $http.get("/championData").then(function(response) {
+    return $scope.champions = response.data.data;
+  });
   $scope.doTheThing = function() {
-    console.log("WakaWaka!");
     $http.get("/summonerInfoByName/" + $scope.summonerNameInput).then(function(response) {
       $scope.summoner = response.data[$scope.summonerNameInput];
       $http.get("/summonerStatsById/" + $scope.summoner.id).then(function(response) {

@@ -27,8 +27,19 @@ app.get('/summonerStatsById/:id', function(httpRequest, httpResponse) {
 
 app.get('/summonerMatchListById/:id', function(httpRequest, httpResponse) {
   return request.get("https://na.api.pvp.net/api/lol/na/v2.2/matchlist/by-summoner/" + httpRequest.params.id + "?api_key=" + riotAPIKey, function(matchesError, matchesHttpResponse, matchesHttpBody) {
-    console.log(matchesHttpBody);
     return httpResponse.send(matchesHttpBody);
+  });
+});
+
+app.get('/championDataById/:id', function(httpRequest, httpResponse) {
+  return request.get("https://global.api.pvp.net/api/lol/static-data/na/v1.2/champion/" + httpRequest.params.id + "?champData=image&api_key=" + riotAPIKey, function(champError, champHttpResponse, champHttpBody) {
+    return httpResponse.send(champHttpBody);
+  });
+});
+
+app.get('/championData', function(httpRequest, httpResponse) {
+  return request.get("https://global.api.pvp.net/api/lol/static-data/na/v1.2/champion?champData=image&api_key=" + riotAPIKey, function(champError, champHttpResponse, champHttpBody) {
+    return httpResponse.send(champHttpBody);
   });
 });
 
