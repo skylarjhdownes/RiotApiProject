@@ -4,26 +4,61 @@ var app;
 app = angular.module('potatoApp', []);
 
 app.controller('potatoController', function($scope, $http) {
+  var attachChampionsToMatches, determineMeleeRangedPreference, getChampionByChampId;
   $scope.summoner = {};
   $scope.summonerStats = {};
   $scope.summonerMatchList = {};
-  $scope.summonerNameInput = 'j1mm';
-  $scope.annie = "http://ddragon.leagueoflegends.com/cdn/5.2.1/img/champion/Annie.png";
+  $scope.summonerNameInput = '';
   $http.get("/championData").then(function(response) {
     return $scope.champions = response.data.data;
   });
-  $scope.doTheThing = function() {
-    $http.get("/summonerInfoByName/" + $scope.summonerNameInput).then(function(response) {
-      $scope.summoner = response.data[$scope.summonerNameInput];
+  getChampionByChampId = function(id) {
+    return _.find($scope.champions, "id", id);
+  };
+  attachChampionsToMatches = function(matches) {
+    var i, len, match, ref, results;
+    ref = $scope.summonerMatchList.matches;
+    results = [];
+    for (i = 0, len = ref.length; i < len; i++) {
+      match = ref[i];
+      results.push(match.champion = getChampionByChampId(match.champion));
+    }
+    return results;
+  };
+  determineMeleeRangedPreference = function(matches) {
+    var i, len, match;
+    $scope.meleeRangedGames = {
+      ranged: 0,
+      melee: 0
+    };
+    for (i = 0, len = matches.length; i < len; i++) {
+      match = matches[i];
+      if (match.champion.stats.attackrange < 200) {
+        $scope.meleeRangedGames.melee++;
+      } else {
+        $scope.meleeRangedGames.ranged++;
+      }
+    }
+    if ($scope.meleeRangedGames.ranged > $scope.meleeRangedGames.melee) {
+      return $scope.meleeRangedPreference = "ranged";
+    } else if ($scope.meleeRangedGames.ranged < $scope.meleeRangedGames.melee) {
+      return $scope.meleeRangedPreference = "melee";
+    } else {
+      return $scope.meleeRangedPreference = "neither ranged nor melee";
+    }
+  };
+  return $scope.getSummonerData = function() {
+    return $http.get("/summonerInfoByName/" + $scope.summonerNameInput).then(function(response) {
+      $scope.summoner = response.data[$scope.summonerNameInput.toLowerCase()];
       $http.get("/summonerStatsById/" + $scope.summoner.id).then(function(response) {
         return $scope.summonerStats = response.data;
       });
-      $http.get("/summonerMatchListById/" + $scope.summoner.id).then(function(response) {
-        return $scope.summonerMatchList = response.data;
+      return $http.get("/summonerMatchListById/" + $scope.summoner.id).then(function(response) {
+        $scope.summonerMatchList = response.data;
+        $scope.summonerMatchListLength = Object.keys($scope.summonerMatchList);
+        attachChampionsToMatches($scope.summonerMatchList);
+        return determineMeleeRangedPreference($scope.summonerMatchList.matches);
       });
-      return null;
     });
-    return null;
   };
-  return null;
 });

@@ -1,19 +1,25 @@
 <script src="modules/angular/angular.min.js"></script>
 <script src="modules/lodash/index.js"></script>
 <script src="pageController.js"></script>
-
+<link rel="stylesheet" type="text/css" href="styles/main.css">
+</script>
 <html ng-app='potatoApp'>
 <div ng-controller="potatoController">
-  <img ng-src="{{annie}}"></img>
-  <form ng-submit="doTheThing()">
-    <label>Enter your Summoner Name:
-      <input type='text' ng-model="summonerNameInput" name="summonerNameInputField">
-    </label>
-
-    <input type="submit" id="submit" value="Submit" />
-  </form>
-  <h2>Summoner data for <span ng-bind='summoner.name'></span>:</h2>
-  <div ng-repeat='match in summonerMatchList.matches' ng-bind='match.champion'></div>
+    <!-- <img ng-src="{{annie}}"></img> -->
+    <form ng-submit="getSummonerData()">
+        <label>Enter your Summoner Name:
+            <input type='text' autofocus="true" ng-model="summonerNameInput" name="summonerNameInputField">
+        </label>
+        <input type="submit" id="submit" value="Submit" />
+    </form>
+    <div class="col-sm-6">
+        <h2>Summoner data for <span ng-bind='summoner.name'></span>:</h2>
+        <div ng-repeat='match in summonerMatchList.matches'><span ng-bind='match.champion.name'></span> <span ng-bind='match.champion.stats.attackrange'></span></div>
+    </div>
+    <div class="col-sm-6">
+      You prefer <span ng-show="meleeRangedPreference" ng-bind="meleeRangedPreference"></span> champions.
+      <!-- Sample size: <span ng-bind=""></span> -->
+    </div>
 </div>
 
 </html>

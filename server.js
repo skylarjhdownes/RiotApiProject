@@ -14,32 +14,38 @@ app.use('/modules', express["static"]('node_modules'));
 riotAPIKey = 'nope';
 
 app.get('/summonerInfoByName/:name', function(httpRequest, httpResponse) {
-  return request.get("https://na.api.pvp.net/api/lol/na/v1.4/summoner/by-name/" + httpRequest.params.name + "?api_key=" + riotAPIKey, function(summonerError, summonerHttpResponse, summonerHttpBody) {
+  return request.get(encodeURI("https://na.api.pvp.net/api/lol/na/v1.4/summoner/by-name/" + httpRequest.params.name + "?api_key=" + riotAPIKey), function(summonerError, summonerHttpResponse, summonerHttpBody) {
     return httpResponse.send(summonerHttpBody);
   });
 });
 
 app.get('/summonerStatsById/:id', function(httpRequest, httpResponse) {
-  return request.get("https://na.api.pvp.net/api/lol/na/v1.3/stats/by-summoner/" + httpRequest.params.id + "/summary?api_key=" + riotAPIKey, function(statsError, statsHttpResponse, statsHttpBody) {
+  return request.get(encodeURI("https://na.api.pvp.net/api/lol/na/v1.3/stats/by-summoner/" + httpRequest.params.id + "/summary?api_key=" + riotAPIKey), function(statsError, statsHttpResponse, statsHttpBody) {
     return httpResponse.send(statsHttpBody);
   });
 });
 
 app.get('/summonerMatchListById/:id', function(httpRequest, httpResponse) {
-  return request.get("https://na.api.pvp.net/api/lol/na/v2.2/matchlist/by-summoner/" + httpRequest.params.id + "?api_key=" + riotAPIKey, function(matchesError, matchesHttpResponse, matchesHttpBody) {
+  return request.get(encodeURI("https://na.api.pvp.net/api/lol/na/v2.2/matchlist/by-summoner/" + httpRequest.params.id + "?api_key=" + riotAPIKey), function(matchesError, matchesHttpResponse, matchesHttpBody) {
     return httpResponse.send(matchesHttpBody);
   });
 });
 
 app.get('/championDataById/:id', function(httpRequest, httpResponse) {
-  return request.get("https://global.api.pvp.net/api/lol/static-data/na/v1.2/champion/" + httpRequest.params.id + "?champData=image&api_key=" + riotAPIKey, function(champError, champHttpResponse, champHttpBody) {
+  return request.get(encodeURI("https://global.api.pvp.net/api/lol/static-data/na/v1.2/champion/" + httpRequest.params.id + "?champData=image&api_key=" + riotAPIKey), function(champError, champHttpResponse, champHttpBody) {
     return httpResponse.send(champHttpBody);
   });
 });
 
 app.get('/championData', function(httpRequest, httpResponse) {
-  return request.get("https://global.api.pvp.net/api/lol/static-data/na/v1.2/champion?champData=image&api_key=" + riotAPIKey, function(champError, champHttpResponse, champHttpBody) {
+  return request.get(encodeURI("https://global.api.pvp.net/api/lol/static-data/na/v1.2/champion?champData=image,stats&api_key=" + riotAPIKey), function(champError, champHttpResponse, champHttpBody) {
     return httpResponse.send(champHttpBody);
+  });
+});
+
+app.get('/matchDetailsById/:id', function(httpRequest, httpResponse) {
+  return request.get(encodeURI("https://na.api.pvp.net/api/lol/na/v2.2/match/" + httpRequest.params.id + "&api_key=" + riotAPIKey), function(matchError, matchHttpResponse, matchHttpBody) {
+    return httpResponse.send(matchHttpBody);
   });
 });
 
