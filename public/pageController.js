@@ -4,7 +4,7 @@ var app;
 app = angular.module('potatoApp', []);
 
 app.controller('potatoController', function($scope, $http) {
-  var attachChampionsToMatches, determineMeleeRangedPreference, getChampionByChampId;
+  var attachChampionsToMatches, attachMatchDataToMatchList, determineWhetherSummonerHasPlayedMoreGamesAsMeleeOrRanged, determineWhetherSummonerPrefersMeleeOrRanged, getChampionByChampId;
   $scope.summoner = {};
   $scope.summonerStats = {};
   $scope.summonerMatchList = {};
@@ -16,36 +16,53 @@ app.controller('potatoController', function($scope, $http) {
     return _.find($scope.champions, "id", id);
   };
   attachChampionsToMatches = function(matches) {
-    var i, len, match, ref, results;
+    var j, len, match, ref, results;
     ref = $scope.summonerMatchList.matches;
     results = [];
-    for (i = 0, len = ref.length; i < len; i++) {
-      match = ref[i];
+    for (j = 0, len = ref.length; j < len; j++) {
+      match = ref[j];
       results.push(match.champion = getChampionByChampId(match.champion));
     }
     return results;
   };
-  determineMeleeRangedPreference = function(matches) {
-    var i, len, match;
-    $scope.meleeRangedGames = {
+  determineWhetherSummonerHasPlayedMoreGamesAsMeleeOrRanged = function(matches) {
+    var j, len, match, meleeRangedGames;
+    meleeRangedGames = {
       ranged: 0,
       melee: 0
     };
-    for (i = 0, len = matches.length; i < len; i++) {
-      match = matches[i];
+    for (j = 0, len = matches.length; j < len; j++) {
+      match = matches[j];
       if (match.champion.stats.attackrange < 200) {
-        $scope.meleeRangedGames.melee++;
+        meleeRangedGames.melee++;
       } else {
-        $scope.meleeRangedGames.ranged++;
+        meleeRangedGames.ranged++;
       }
     }
-    if ($scope.meleeRangedGames.ranged > $scope.meleeRangedGames.melee) {
+    return meleeRangedGames;
+  };
+  determineWhetherSummonerPrefersMeleeOrRanged = function(meleeRangedGames) {
+    if (meleeRangedGames.ranged > meleeRangedGames.melee) {
       return $scope.meleeRangedPreference = "ranged";
-    } else if ($scope.meleeRangedGames.ranged < $scope.meleeRangedGames.melee) {
+    } else if (meleeRangedGames.ranged < meleeRangedGames.melee) {
       return $scope.meleeRangedPreference = "melee";
     } else {
       return $scope.meleeRangedPreference = "neither ranged nor melee";
     }
+  };
+  attachMatchDataToMatchList = function(matches) {
+    var doTheThing, i, j, len, m, results;
+    doTheThing = function(match, index) {
+      return $http.get("/matchDetailsById/" + match.matchId).then(function(response) {
+        return $scope.summonerMatchList.matches[index].matchData = response.data;
+      });
+    };
+    results = [];
+    for (i = j = 0, len = matches.length; j < len; i = ++j) {
+      m = matches[i];
+      results.push(doTheThing(m, i));
+    }
+    return results;
   };
   return $scope.getSummonerData = function() {
     return $http.get("/summonerInfoByName/" + $scope.summonerNameInput).then(function(response) {
@@ -54,10 +71,13 @@ app.controller('potatoController', function($scope, $http) {
         return $scope.summonerStats = response.data;
       });
       return $http.get("/summonerMatchListById/" + $scope.summoner.id).then(function(response) {
+        var meleeRangedGames;
         $scope.summonerMatchList = response.data;
         $scope.summonerMatchListLength = Object.keys($scope.summonerMatchList);
         attachChampionsToMatches($scope.summonerMatchList);
-        return determineMeleeRangedPreference($scope.summonerMatchList.matches);
+        meleeRangedGames = determineWhetherSummonerHasPlayedMoreGamesAsMeleeOrRanged($scope.summonerMatchList.matches);
+        determineWhetherSummonerPrefersMeleeOrRanged(meleeRangedGames);
+        return attachMatchDataToMatchList($scope.summonerMatchList.matches);
       });
     });
   };

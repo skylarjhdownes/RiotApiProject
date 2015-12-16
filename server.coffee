@@ -5,7 +5,7 @@ app = express()
 app.use('/', express.static('public'))
 app.use('/modules', express.static('node_modules'))
 
-riotAPIKey = 'nope'
+riotAPIKey = '1c60e183-c159-47c8-a258-6af33b7e34e1'
 
 # app.get('/', (httpRequest, httpResponse) ->
 # 	httpResponse.send("POTATO!")
@@ -42,7 +42,7 @@ app.get('/championData', (httpRequest, httpResponse) ->
 )
 
 app.get('/matchDetailsById/:id', (httpRequest, httpResponse) ->
-  request.get(encodeURI("https://na.api.pvp.net/api/lol/na/v2.2/match/#{httpRequest.params.id}&api_key=#{riotAPIKey}"), (matchError, matchHttpResponse, matchHttpBody) ->
+  request.get(encodeURI("https://na.api.pvp.net/api/lol/na/v2.2/match/#{httpRequest.params.id}?api_key=#{riotAPIKey}"), (matchError, matchHttpResponse, matchHttpBody) ->
     httpResponse.send(matchHttpBody)
   )
 )

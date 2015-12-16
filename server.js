@@ -11,7 +11,7 @@ app.use('/', express["static"]('public'));
 
 app.use('/modules', express["static"]('node_modules'));
 
-riotAPIKey = 'nope';
+riotAPIKey = '1c60e183-c159-47c8-a258-6af33b7e34e1';
 
 app.get('/summonerInfoByName/:name', function(httpRequest, httpResponse) {
   return request.get(encodeURI("https://na.api.pvp.net/api/lol/na/v1.4/summoner/by-name/" + httpRequest.params.name + "?api_key=" + riotAPIKey), function(summonerError, summonerHttpResponse, summonerHttpBody) {
@@ -44,7 +44,7 @@ app.get('/championData', function(httpRequest, httpResponse) {
 });
 
 app.get('/matchDetailsById/:id', function(httpRequest, httpResponse) {
-  return request.get(encodeURI("https://na.api.pvp.net/api/lol/na/v2.2/match/" + httpRequest.params.id + "&api_key=" + riotAPIKey), function(matchError, matchHttpResponse, matchHttpBody) {
+  return request.get(encodeURI("https://na.api.pvp.net/api/lol/na/v2.2/match/" + httpRequest.params.id + "?api_key=" + riotAPIKey), function(matchError, matchHttpResponse, matchHttpBody) {
     return httpResponse.send(matchHttpBody);
   });
 });

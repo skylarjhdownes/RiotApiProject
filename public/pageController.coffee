@@ -18,20 +18,29 @@ app.controller('potatoController', ($scope, $http) ->
     for match in $scope.summonerMatchList.matches
       match.champion = getChampionByChampId(match.champion)
 
-  determineMeleeRangedPreference = (matches) ->
-    $scope.meleeRangedGames = {ranged : 0, melee: 0}
+  determineWhetherSummonerHasPlayedMoreGamesAsMeleeOrRanged = (matches) ->
+    meleeRangedGames = {ranged : 0, melee: 0}
     for match in matches
       if match.champion.stats.attackrange < 200
-        $scope.meleeRangedGames.melee++
-        # if match.matchData.
+        meleeRangedGames.melee++
       else
-        $scope.meleeRangedGames.ranged++
-    if $scope.meleeRangedGames.ranged > $scope.meleeRangedGames.melee
+        meleeRangedGames.ranged++
+    return meleeRangedGames
+
+  determineWhetherSummonerPrefersMeleeOrRanged = (meleeRangedGames) ->
+    if meleeRangedGames.ranged > meleeRangedGames.melee
       $scope.meleeRangedPreference = "ranged"
-    else if $scope.meleeRangedGames.ranged < $scope.meleeRangedGames.melee
+    else if meleeRangedGames.ranged < meleeRangedGames.melee
       $scope.meleeRangedPreference = "melee"
     else
       $scope.meleeRangedPreference = "neither ranged nor melee"
+
+  attachMatchDataToMatchList =  (matches) ->
+    doTheThing = (match, index) ->
+      $http.get("/matchDetailsById/#{match.matchId}").then (response) ->
+        $scope.summonerMatchList.matches[index].matchData = response.data
+    for m, i in matches
+      doTheThing(m,i)
 
 
   $scope.getSummonerData = () ->
@@ -43,8 +52,9 @@ app.controller('potatoController', ($scope, $http) ->
           $scope.summonerMatchList = response.data
           $scope.summonerMatchListLength = Object.keys($scope.summonerMatchList)
           attachChampionsToMatches($scope.summonerMatchList)
-          determineMeleeRangedPreference($scope.summonerMatchList.matches)
-          # for match in $scope.summonerMatchList.matches
+          meleeRangedGames = determineWhetherSummonerHasPlayedMoreGamesAsMeleeOrRanged($scope.summonerMatchList.matches)
+          determineWhetherSummonerPrefersMeleeOrRanged(meleeRangedGames)
+          attachMatchDataToMatchList($scope.summonerMatchList.matches)
             # $http.get("/matchDetailsById/#{match.matchId}").then (response) ->
               # match.matchData = response.data
               # userTeam =
