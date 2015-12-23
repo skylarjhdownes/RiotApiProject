@@ -17,56 +17,36 @@ app = express()
 app.use('/', express.static('public'))
 app.use('/modules', express.static('node_modules'))
 
-riotAPIKey = 'nope'
-
-# app.get('/', (httpRequest, httpResponse) ->
-# 	httpResponse.send("POTATO!")
-# )
-
 app.get('/summonerInfoByName/:name', (httpRequest, httpResponse) ->
-  console.log(httpRequest.params.name)
   leagueApiClient.getSummonersByNameAsync([httpRequest.params.name], {}).then (response) ->
-    console.log(response)
     httpResponse.send(response)
-  return null
-  # request.get(encodeURI("https://na.api.pvp.net/api/lol/na/v1.4/summoner/by-name/#{httpRequest.params.name}?api_key=#{riotAPIKey}"), (summonerError, summonerHttpResponse, summonerHttpBody) ->
-  #   httpResponse.send(summonerHttpBody)
-  # )
 )
 
 app.get('/summonerStatsById/:id', (httpRequest, httpResponse) ->
-  request.get(encodeURI("https://na.api.pvp.net/api/lol/na/v1.3/stats/by-summoner/#{httpRequest.params.id}/summary?api_key=#{riotAPIKey}"), (statsError, statsHttpResponse, statsHttpBody) ->
-    httpResponse.send(statsHttpBody)
-  )
+  leagueApiClient.getSummonersByIdAsync([httpRequest.params.id], {}).then (response) ->
+    httpResponse.send(response)
 )
 
 app.get('/summonerMatchListById/:id', (httpRequest, httpResponse) ->
-  request.get(encodeURI("https://na.api.pvp.net/api/lol/na/v2.2/matchlist/by-summoner/#{httpRequest.params.id}?api_key=#{riotAPIKey}"), (matchesError, matchesHttpResponse, matchesHttpBody) ->
-    httpResponse.send(matchesHttpBody)
-  )
+  leagueApiClient.getMatchHistoryForSummonerAsync([httpRequest.params.id], {}).then (response) ->
+    httpResponse.send(response)
 )
 
 app.get('/championDataById/:id', (httpRequest, httpResponse) ->
-  request.get(encodeURI("https://global.api.pvp.net/api/lol/static-data/na/v1.2/champion/#{httpRequest.params.id}?champData=image&api_key=#{riotAPIKey}"), (champError, champHttpResponse, champHttpBody) ->
-    httpResponse.send(champHttpBody)
-  )
+  leagueApiClient.getChampionByIdAsync([httpRequest.params.id], {}).then (response) ->
+    httpResponse.send(response)
 )
 
 app.get('/championData', (httpRequest, httpResponse) ->
-  request.get(encodeURI("https://global.api.pvp.net/api/lol/static-data/na/v1.2/champion?champData=image,stats&api_key=#{riotAPIKey}"), (champError, champHttpResponse, champHttpBody) ->
-    httpResponse.send(champHttpBody)
-  )
+  leagueApiClient.getChampionsAsync({champData:'stats','image'}).then (response) ->
+    httpResponse.send(response)
 )
 
 app.get('/matchDetailsById/:id', (httpRequest, httpResponse) ->
-  request.get(encodeURI("https://na.api.pvp.net/api/lol/na/v2.2/match/#{httpRequest.params.id}?api_key=#{riotAPIKey}"), (matchError, matchHttpResponse, matchHttpBody) ->
-    httpResponse.send(matchHttpBody)
-  )
+  leagueApiClient.getMatchAsync([httpRequest.params.id], {}).then (response) ->
+    httpResponse.send(response)
 )
 
-# app.post('/potato', (httpRequest, httpResponse) ->
-#   httpResponse.send("zcvxzcvxzcv")
-# )
 
 port = 4000
 server = app.listen(port)
