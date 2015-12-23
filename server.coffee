@@ -1,20 +1,37 @@
 express = require 'express'
 request = require 'request'
+leagueApiWrapper = require 'lol-js'
+# redis = require 'redis'
+# redisClient = redis.createClient()
+
+# redisClient.on('connect', () ->
+#     console.log 'connected'
+# )
+leagueApiClient = leagueApiWrapper.client {
+  apiKey: 'nope',
+  defaultRegion: 'na',
+  cache: leagueApiWrapper.lruCache({max:2000})
+}
 app = express()
 
 app.use('/', express.static('public'))
 app.use('/modules', express.static('node_modules'))
 
-riotAPIKey = '1c60e183-c159-47c8-a258-6af33b7e34e1'
+riotAPIKey = 'nope'
 
 # app.get('/', (httpRequest, httpResponse) ->
 # 	httpResponse.send("POTATO!")
 # )
 
 app.get('/summonerInfoByName/:name', (httpRequest, httpResponse) ->
-  request.get(encodeURI("https://na.api.pvp.net/api/lol/na/v1.4/summoner/by-name/#{httpRequest.params.name}?api_key=#{riotAPIKey}"), (summonerError, summonerHttpResponse, summonerHttpBody) ->
-    httpResponse.send(summonerHttpBody)
-  )
+  console.log(httpRequest.params.name)
+  leagueApiClient.getSummonersByNameAsync([httpRequest.params.name], {}).then (response) ->
+    console.log(response)
+    httpResponse.send(response)
+  return null
+  # request.get(encodeURI("https://na.api.pvp.net/api/lol/na/v1.4/summoner/by-name/#{httpRequest.params.name}?api_key=#{riotAPIKey}"), (summonerError, summonerHttpResponse, summonerHttpBody) ->
+  #   httpResponse.send(summonerHttpBody)
+  # )
 )
 
 app.get('/summonerStatsById/:id', (httpRequest, httpResponse) ->
