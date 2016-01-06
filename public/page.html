@@ -14,11 +14,16 @@
     </form>
     <div class="col-sm-6">
         <h2>Summoner data for <span ng-bind='summoner.name'></span>:</h2>
-        <div ng-repeat='match in summonerMatchList.matches'><span ng-bind='match.champion.name'></span> <span ng-bind='match.champion.stats.attackrange'></span></div>
+        <div ng-repeat='match in summonerMatchlist.matches'>
+            <span ng-bind='match.champion.name'></span>
+            <span ng-bind="match.lane"></span>
+            <span ng-bind='match.champion.stats.attackrange'></span>
+            <span ng-bind="match.matchData.matchDuration"></span>
+        </div>
     </div>
     <div class="col-sm-6">
-      You prefer <span ng-show="meleeRangedPreference" ng-bind="meleeRangedPreference"></span> champions.
-      <!-- Sample size: <span ng-bind=""></span> -->
+        You prefer <span ng-show="meleeRangedPreference" ng-bind="meleeRangedPreference"></span> champions.
+        <!-- Sample size: <span ng-bind=""></span> -->
     </div>
 </div>
 

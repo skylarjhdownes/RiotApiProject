@@ -2,20 +2,17 @@ app = angular.module('potatoApp', [])
 
 app.controller('potatoController', ($scope, $http) ->
   $scope.summoner = {}
-  $scope.summonerStats = {}
-  $scope.summonerMatchList = {}
+  $scope.summonerMatchlist = {}
   $scope.summonerNameInput = ''
   # $http.get("http://ddragon.leagueoflegends.com/cdn/5.2.1/img/champion/Annie.png").then (response) ->
   #   $scope.annie = response.data
   # $scope.annie = "http://ddragon.leagueoflegends.com/cdn/5.2.1/img/champion/Annie.png"
-  $http.get("/championData").then (response) ->
-    $scope.champions = response.data.data
 
   getChampionByChampId = (id) ->
     _.find($scope.champions, "id", id)
 
   attachChampionsToMatches = (matches) ->
-    for match in $scope.summonerMatchList.matches
+    for match in $scope.summonerMatchlist.matches
       match.champion = getChampionByChampId(match.champion)
 
   determineWhetherSummonerHasPlayedMoreGamesAsMeleeOrRanged = (matches) ->
@@ -27,6 +24,7 @@ app.controller('potatoController', ($scope, $http) ->
         meleeRangedGames.ranged++
     return meleeRangedGames
 
+  #I think this is assuming that attachChampionsToMatches has already finished, which doesn't work.
   determineWhetherSummonerPrefersMeleeOrRanged = (meleeRangedGames) ->
     if meleeRangedGames.ranged > meleeRangedGames.melee
       $scope.meleeRangedPreference = "ranged"
@@ -35,26 +33,27 @@ app.controller('potatoController', ($scope, $http) ->
     else
       $scope.meleeRangedPreference = "neither ranged nor melee"
 
-  attachMatchDataToMatchList =  (matches) ->
+  attachMatchDataToMatchlist =  (matches) ->
     doTheThing = (match, index) ->
       $http.get("/matchDetailsById/#{match.matchId}").then (response) ->
-        $scope.summonerMatchList.matches[index].matchData = response.data
-    for m, i in matches
-      doTheThing(m,i)
+        $scope.summonerMatchlist.matches[index].matchData = response.data
+    for match, index in matches
+      doTheThing(match,index)
+
 
 
   $scope.getSummonerData = () ->
+    $http.get("/championData").then (response) ->
+      $scope.champions = response.data.data
     $http.get("/summonerInfoByName/#{$scope.summonerNameInput}").then (response) ->
         $scope.summoner = response.data[$scope.summonerNameInput.toLowerCase()]
-        $http.get("/summonerStatsById/#{$scope.summoner.id}").then (response) ->
-          $scope.summonerStats = response.data
-        $http.get("/summonerMatchListById/#{$scope.summoner.id}").then (response) ->
-          $scope.summonerMatchList = response.data
-          $scope.summonerMatchListLength = Object.keys($scope.summonerMatchList)
-          attachChampionsToMatches($scope.summonerMatchList)
-          meleeRangedGames = determineWhetherSummonerHasPlayedMoreGamesAsMeleeOrRanged($scope.summonerMatchList.matches)
+        $http.get("/summonerMatchlistById/#{$scope.summoner.id}").then (response) ->
+          $scope.summonerMatchlist = response.data
+          $scope.summonerMatchlistLength = Object.keys($scope.summonerMatchlist)
+          attachChampionsToMatches($scope.summonerMatchlist)
+          meleeRangedGames = determineWhetherSummonerHasPlayedMoreGamesAsMeleeOrRanged($scope.summonerMatchlist.matches)
           determineWhetherSummonerPrefersMeleeOrRanged(meleeRangedGames)
-          attachMatchDataToMatchList($scope.summonerMatchList.matches)
+          attachMatchDataToMatchlist($scope.summonerMatchlist.matches)
             # $http.get("/matchDetailsById/#{match.matchId}").then (response) ->
               # match.matchData = response.data
               # userTeam =

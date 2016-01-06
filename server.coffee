@@ -1,6 +1,9 @@
 express = require 'express'
 request = require 'request'
 leagueApiWrapper = require 'lol-js'
+
+defaultRegion =  'na'
+riotAPIKey = 'nope'
 # redis = require 'redis'
 # redisClient = redis.createClient()
 
@@ -8,8 +11,7 @@ leagueApiWrapper = require 'lol-js'
 #     console.log 'connected'
 # )
 leagueApiClient = leagueApiWrapper.client {
-  apiKey: 'nope',
-  defaultRegion: 'na',
+  apiKey: riotAPIKey,
   cache: leagueApiWrapper.lruCache({max:2000})
 }
 app = express()
@@ -18,32 +20,33 @@ app.use('/', express.static('public'))
 app.use('/modules', express.static('node_modules'))
 
 app.get('/summonerInfoByName/:name', (httpRequest, httpResponse) ->
-  leagueApiClient.getSummonersByNameAsync([httpRequest.params.name], {}).then (response) ->
+  leagueApiClient.getSummonersByName(defaultRegion, [httpRequest.params.name]).then (response) ->
     httpResponse.send(response)
 )
 
-app.get('/summonerStatsById/:id', (httpRequest, httpResponse) ->
-  leagueApiClient.getSummonersByIdAsync([httpRequest.params.id], {}).then (response) ->
-    httpResponse.send(response)
-)
-
-app.get('/summonerMatchListById/:id', (httpRequest, httpResponse) ->
-  leagueApiClient.getMatchHistoryForSummonerAsync([httpRequest.params.id], {}).then (response) ->
+app.get('/summonerMatchlistById/:id', (httpRequest, httpResponse) ->
+  leagueApiClient.getMatchlistBySummoner(defaultRegion, [httpRequest.params.id]).then (response) ->
+    # console.log(response)
     httpResponse.send(response)
 )
 
 app.get('/championDataById/:id', (httpRequest, httpResponse) ->
-  leagueApiClient.getChampionByIdAsync([httpRequest.params.id], {}).then (response) ->
+  leagueApiClient.getChampionById(defaultRegion, [httpRequest.params.id]).then (response) ->
     httpResponse.send(response)
 )
 
 app.get('/championData', (httpRequest, httpResponse) ->
-  leagueApiClient.getChampionsAsync({champData:'stats','image'}).then (response) ->
-    httpResponse.send(response)
+  request.get(encodeURI("https://global.api.pvp.net/api/lol/static-data/na/v1.2/champion?champData=image,stats&api_key=#{riotAPIKey}"), (champError, champHttpResponse, champHttpBody) ->
+    console.log(champHttpBody)
+    httpResponse.send(champHttpBody)
+  )
+  # leagueApiClient.getChampions({champData:'stats','image'}).then (response) ->
+  #   console.log(response)
+  #   httpResponse.send(response)
 )
 
 app.get('/matchDetailsById/:id', (httpRequest, httpResponse) ->
-  leagueApiClient.getMatchAsync([httpRequest.params.id], {}).then (response) ->
+  leagueApiClient.getMatch(defaultRegion, [httpRequest.params.id]).then (response) ->
     httpResponse.send(response)
 )
 
