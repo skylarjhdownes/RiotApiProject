@@ -32,6 +32,25 @@ app.controller('mainController', ($scope, $http, $q) ->
     else
       $scope.meleeRangedPreference = "neither ranged nor melee"
 
+  determineIfSummonerWonOrLost = (matchData) ->
+    summonerMatchParticipantId = _.find(matchData.participantIdentities, "player.summonerId", $scope.summoner.id).participantId
+    return _.find(matchData.participants, "participantId", summonerMatchParticipantId).stats.winner
+
+  $scope.getSummonerData = () ->
+    $scope.gettingMatchData = true
+    $http.get("/championData").then((response) ->
+      $scope.champions = response.data.data
+      $http.get("/summonerInfoByName/#{$scope.summonerNameInput}").then (response) ->
+        $scope.summoner = response.data[$scope.summonerNameInput.toLowerCase()]
+        $http.get("/summonerMatchlistById/#{$scope.summoner.id}").then (response) ->
+          $scope.summonerMatchlist = response.data
+          attachChampionsToMatches($scope.summonerMatchlist)
+          meleeRangedGames = determineWhetherSummonerHasPlayedMoreGamesAsMeleeOrRanged($scope.summonerMatchlist.matches)
+          determineWhetherSummonerPrefersMeleeOrRanged(meleeRangedGames)
+          attachMatchDataToMatchlist($scope.summonerMatchlist.matches)
+    ).finally () ->
+      delete $scope.gettingMatchData
+
   attachMatchDataToMatchlist =  (matches) ->
     meleeGamesWon = 0
     meleeGamesLost = 0
@@ -40,7 +59,7 @@ app.controller('mainController', ($scope, $http, $q) ->
     promiseArray = []
 
     for match, index in matches
-      promiseArray.push($http.get("/matchDetailsById/#{match.matchId}"))  # $q.all  ???
+      promiseArray.push($http.get("/matchDetailsById/#{match.matchId}"))
     $q.all(promiseArray).then (responses) ->
       for response, index in responses
           $scope.summonerMatchlist.matches[index].matchData = response.data
@@ -55,21 +74,4 @@ app.controller('mainController', ($scope, $http, $q) ->
             rangedGamesLost++
       $scope.percentMeleeGamesWon = Math.round(meleeGamesWon/(meleeGamesWon+meleeGamesLost)*100)
       $scope.percentRangedGamesWon = Math.round(rangedGamesWon/(rangedGamesWon+rangedGamesLost)*100)
-  determineIfSummonerWonOrLost = (matchData) ->
-    summonerMatchParticipantId = _.find(matchData.participantIdentities, "player.summonerId", $scope.summoner.id).participantId
-    return _.find(matchData.participants, "participantId", summonerMatchParticipantId).stats.winner
-
-
-  $scope.getSummonerData = () ->
-    $http.get("/championData").then (response) ->
-      $scope.champions = response.data.data
-      $http.get("/summonerInfoByName/#{$scope.summonerNameInput}").then (response) ->
-        $scope.summoner = response.data[$scope.summonerNameInput.toLowerCase()]
-        $http.get("/summonerMatchlistById/#{$scope.summoner.id}").then (response) ->
-          $scope.summonerMatchlist = response.data
-          attachChampionsToMatches($scope.summonerMatchlist)
-          meleeRangedGames = determineWhetherSummonerHasPlayedMoreGamesAsMeleeOrRanged($scope.summonerMatchlist.matches)
-          determineWhetherSummonerPrefersMeleeOrRanged(meleeRangedGames)
-          attachMatchDataToMatchlist($scope.summonerMatchlist.matches)
-          $q.when()
 )

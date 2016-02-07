@@ -46,7 +46,31 @@ app.controller('mainController', function($scope, $http, $q) {
       return $scope.meleeRangedPreference = "neither ranged nor melee";
     }
   };
-  attachMatchDataToMatchlist = function(matches) {
+  determineIfSummonerWonOrLost = function(matchData) {
+    var summonerMatchParticipantId;
+    summonerMatchParticipantId = _.find(matchData.participantIdentities, "player.summonerId", $scope.summoner.id).participantId;
+    return _.find(matchData.participants, "participantId", summonerMatchParticipantId).stats.winner;
+  };
+  $scope.getSummonerData = function() {
+    $scope.gettingMatchData = true;
+    return $http.get("/championData").then(function(response) {
+      $scope.champions = response.data.data;
+      return $http.get("/summonerInfoByName/" + $scope.summonerNameInput).then(function(response) {
+        $scope.summoner = response.data[$scope.summonerNameInput.toLowerCase()];
+        return $http.get("/summonerMatchlistById/" + $scope.summoner.id).then(function(response) {
+          var meleeRangedGames;
+          $scope.summonerMatchlist = response.data;
+          attachChampionsToMatches($scope.summonerMatchlist);
+          meleeRangedGames = determineWhetherSummonerHasPlayedMoreGamesAsMeleeOrRanged($scope.summonerMatchlist.matches);
+          determineWhetherSummonerPrefersMeleeOrRanged(meleeRangedGames);
+          return attachMatchDataToMatchlist($scope.summonerMatchlist.matches);
+        });
+      });
+    })["finally"](function() {
+      return delete $scope.gettingMatchData;
+    });
+  };
+  return attachMatchDataToMatchlist = function(matches) {
     var i, index, len, match, meleeGamesLost, meleeGamesWon, promiseArray, rangedGamesLost, rangedGamesWon;
     meleeGamesWon = 0;
     meleeGamesLost = 0;
@@ -75,28 +99,6 @@ app.controller('mainController', function($scope, $http, $q) {
       }
       $scope.percentMeleeGamesWon = Math.round(meleeGamesWon / (meleeGamesWon + meleeGamesLost) * 100);
       return $scope.percentRangedGamesWon = Math.round(rangedGamesWon / (rangedGamesWon + rangedGamesLost) * 100);
-    });
-  };
-  determineIfSummonerWonOrLost = function(matchData) {
-    var summonerMatchParticipantId;
-    summonerMatchParticipantId = _.find(matchData.participantIdentities, "player.summonerId", $scope.summoner.id).participantId;
-    return _.find(matchData.participants, "participantId", summonerMatchParticipantId).stats.winner;
-  };
-  return $scope.getSummonerData = function() {
-    return $http.get("/championData").then(function(response) {
-      $scope.champions = response.data.data;
-      return $http.get("/summonerInfoByName/" + $scope.summonerNameInput).then(function(response) {
-        $scope.summoner = response.data[$scope.summonerNameInput.toLowerCase()];
-        return $http.get("/summonerMatchlistById/" + $scope.summoner.id).then(function(response) {
-          var meleeRangedGames;
-          $scope.summonerMatchlist = response.data;
-          attachChampionsToMatches($scope.summonerMatchlist);
-          meleeRangedGames = determineWhetherSummonerHasPlayedMoreGamesAsMeleeOrRanged($scope.summonerMatchlist.matches);
-          determineWhetherSummonerPrefersMeleeOrRanged(meleeRangedGames);
-          attachMatchDataToMatchlist($scope.summonerMatchlist.matches);
-          return $q.when();
-        });
-      });
     });
   };
 });

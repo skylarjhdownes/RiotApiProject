@@ -5,30 +5,41 @@
 </script>
 <html ng-app='leagueApp'>
 <div ng-controller="mainController">
-    <!-- <img ng-src="{{annie}}"></img> -->
-    <form ng-submit="getSummonerData()">
-        <label>Enter your Summoner Name:
-            <input type='text' autofocus="true" ng-model="summonerNameInput" name="summonerNameInputField">
-        </label>
-        <input type="submit" id="submit" value="Submit" />
-    </form>
-    <div class="col-sm-6">
-        <h2>Summoner data for <span ng-bind='summoner.name'></span>:</h2>
-        <div ng-repeat='match in summonerMatchlist.matches'>
-            <span ng-bind='match.champion.name'></span>
-            <span ng-bind='match.champion.stats.attackrange'></span>
-            <span ng-bind="match.matchData.matchDuration"></span>
-             Winner: <span ng-bind="match.winner"></span>
+    <div class="container">
+        <div class="row">asdf</div>
+    </div>
+    <div class="jumbotron">
+        <div class="container">
+            <!-- <img ng-src="{{annie}}"></img> -->
+            <form ng-submit="getSummonerData()">
+                <div class="input-group input-group-lg">
+                    <input type='text' class="form-control" autofocus="true" ng-model="summonerNameInput" name="summonerNameInputField" placeholder="Enter a Summoner Name">
+                    <span class="input-group-btn">
+                        <input class="btn" type="submit" id="submit" value="Submit" />
+                    </span>
+                </div>
+            </form>
+            <div style="background-color: orange;" ng-show="gettingMatchData">
+                Gathering match data...
+            </div>
+            <div class="col-sm-6">
+                <h2>Summoner data for <span ng-bind='summoner.name'></span>:</h2>
+                <div ng-repeat='match in summonerMatchlist.matches'>
+                    <span ng-bind='match.champion.name'></span>
+                    <span ng-bind='match.champion.stats.attackrange'></span>
+                    <span ng-bind="match.matchData.matchDuration"></span> Winner: <span ng-bind="match.winner"></span>
+                </div>
+            </div>
+            <div ng-show="meleeRangedPreference" class="col-sm-6">
+                You play <span ng-bind="meleeRangedPreference"></span> champions more often.
+            </div>
+            <div ng-show="percentMeleeGamesWon" class="col-sm-6">
+                You have won <span ng-bind="percentMeleeGamesWon"></span>% of your melee games
+            </div>
+            <div ng-show="percentRangedGamesWon" class="col-sm-6">
+                You have won <span ng-bind="percentRangedGamesWon"></span>% of your ranged games
+            </div>
         </div>
-    </div>
-    <div ng-show="meleeRangedPreference" class="col-sm-6">
-        You play <span ng-bind="meleeRangedPreference"></span> champions more often.
-    </div>
-    <div ng-show="meleeRangedPreference" class="col-sm-6">
-        You have won <span ng-bind="percentMeleeGamesWon"></span>% of your melee games
-    </div>
-    <div ng-show="meleeRangedPreference" class="col-sm-6">
-        You have won <span ng-bind="percentRangedGamesWon"></span>% of your ranged games
     </div>
 </div>
 
