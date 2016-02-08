@@ -48,11 +48,19 @@ app.controller('mainController', function($scope, $http, $q) {
   };
   determineIfSummonerWonOrLost = function(matchData) {
     var summonerMatchParticipantId;
-    summonerMatchParticipantId = _.find(matchData.participantIdentities, "player.summonerId", $scope.summoner.id).participantId;
-    return _.find(matchData.participants, "participantId", summonerMatchParticipantId).stats.winner;
+    if (matchData.participantIdentities) {
+      summonerMatchParticipantId = _.find(matchData.participantIdentities, "player.summonerId", $scope.summoner.id).participantId;
+      return _.find(matchData.participants, "participantId", summonerMatchParticipantId).stats.winner;
+    } else {
+      return false;
+    }
   };
   $scope.getSummonerData = function() {
     $scope.gettingMatchData = true;
+    $scope.summonerMatchlist = {};
+    delete $scope.meleeRangedPreference;
+    delete $scope.percentMeleeGamesWon;
+    delete $scope.percentRangedGamesWon;
     return $http.get("/championData").then(function(response) {
       $scope.champions = response.data.data;
       return $http.get("/summonerInfoByName/" + $scope.summonerNameInput).then(function(response) {

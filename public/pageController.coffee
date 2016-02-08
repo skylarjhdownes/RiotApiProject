@@ -33,11 +33,17 @@ app.controller('mainController', ($scope, $http, $q) ->
       $scope.meleeRangedPreference = "neither ranged nor melee"
 
   determineIfSummonerWonOrLost = (matchData) ->
-    summonerMatchParticipantId = _.find(matchData.participantIdentities, "player.summonerId", $scope.summoner.id).participantId
-    return _.find(matchData.participants, "participantId", summonerMatchParticipantId).stats.winner
+    if matchData.participantIdentities
+      summonerMatchParticipantId = _.find(matchData.participantIdentities, "player.summonerId", $scope.summoner.id).participantId
+      return _.find(matchData.participants, "participantId", summonerMatchParticipantId).stats.winner
+    else return false
 
   $scope.getSummonerData = () ->
     $scope.gettingMatchData = true
+    $scope.summonerMatchlist = {}
+    delete $scope.meleeRangedPreference
+    delete $scope.percentMeleeGamesWon
+    delete $scope.percentRangedGamesWon
     $http.get("/championData").then((response) ->
       $scope.champions = response.data.data
       $http.get("/summonerInfoByName/#{$scope.summonerNameInput}").then (response) ->
