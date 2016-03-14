@@ -1,0 +1,36 @@
+{
+  "name": "meleerangedpreference",
+  "version": "1.0.0",
+  "description": "Simple webapp that hits Riot's api and crunches a summoner's match history.",
+  "main": "server.js",
+  "dependencies": {
+    "bootstrap": "^3.3.6",
+    "lodash": "^3.10.1",
+    "angular": "^1.4.8",
+    "express": "^4.13.3",
+    "lol-js": "^2.0.1",
+    "request": "^2.67.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/skylarjhdownes/RiotApiProject.git"
+  },
+  "keywords": [
+    "riot",
+    "league",
+    "api",
+    "melee",
+    "ranged"
+  ],
+  "author": "Skylar Downes",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/skylarjhdownes/RiotApiProject/issues"
+  },
+  "homepage": "https://github.com/skylarjhdownes/RiotApiProject#readme"
+}
