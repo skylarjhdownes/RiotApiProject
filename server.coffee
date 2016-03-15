@@ -3,7 +3,7 @@ request = require 'request'
 leagueApiWrapper = require 'lol-js'
 
 defaultRegion =  'na'
-riotAPIKey = 'nope'
+riotAPIKey = process.env.RIOT_API_KEY
 # redis = require 'redis'
 # redisClient = redis.createClient()
 

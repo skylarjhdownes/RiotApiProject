@@ -9,7 +9,7 @@ leagueApiWrapper = require('lol-js');
 
 defaultRegion = 'na';
 
-riotAPIKey = 'nope';
+riotAPIKey = process.env.RIOT_API_KEY;
 
 leagueApiClient = leagueApiWrapper.client({
   apiKey: riotAPIKey,
