@@ -55,7 +55,7 @@ app.get('/matchDetailsById/:id', function(httpRequest, httpResponse) {
   });
 });
 
-port = 4000;
+port = process.env.PORT || 4000;
 
 server = app.listen(port);
 
