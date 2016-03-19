@@ -3,7 +3,7 @@ request = require 'request'
 leagueApiWrapper = require 'lol-js'
 
 defaultRegion =  'na'
-riotAPIKey = process.env.RIOT_API_KEY
+riotAPIKey = process.env.RIOT_API_KEY || 'nope'
 # redis = require 'redis'
 # redisClient = redis.createClient()
 
@@ -18,6 +18,10 @@ app = express()
 
 app.use('/', express.static('public'))
 app.use('/modules', express.static('node_modules'))
+
+app.get('/', (httpRequest, httpResponse) ->
+  httpResponse.redirect('page.html')
+)
 
 app.get('/summonerInfoByName/:name', (httpRequest, httpResponse) ->
   leagueApiClient.getSummonersByName(defaultRegion, [httpRequest.params.name]).then (response) ->

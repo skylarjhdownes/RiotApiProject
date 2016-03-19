@@ -9,7 +9,7 @@ leagueApiWrapper = require('lol-js');
 
 defaultRegion = 'na';
 
-riotAPIKey = process.env.RIOT_API_KEY;
+riotAPIKey = process.env.RIOT_API_KEY || 'nope';
 
 leagueApiClient = leagueApiWrapper.client({
   apiKey: riotAPIKey,
@@ -23,6 +23,10 @@ app = express();
 app.use('/', express["static"]('public'));
 
 app.use('/modules', express["static"]('node_modules'));
+
+app.get('/', function(httpRequest, httpResponse) {
+  return httpResponse.redirect('page.html');
+});
 
 app.get('/summonerInfoByName/:name', function(httpRequest, httpResponse) {
   return leagueApiClient.getSummonersByName(defaultRegion, [httpRequest.params.name]).then(function(response) {
